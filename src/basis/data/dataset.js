@@ -231,6 +231,16 @@
     sources: null,
 
    /**
+    * 
+    */
+    sourcesMap_: null, 
+
+   /**
+    *
+    */ 
+    sourcesAdapters_: null,
+
+   /**
     * @type {function(count:number, sourceCount:number):boolean}
     */
     rule: function(count, sourceCount){
@@ -249,6 +259,9 @@
     * @constructor
     */
     init: function(){
+      this.sourcesMap_ = {};
+      this.sourcesAdapters_ = {};
+
       // inherit
       AbstractDataset.prototype.init.call(this);
 
@@ -321,6 +334,11 @@
     * @return {boolean} Returns true if new source added.
     */
     addSource: function(source){
+      if (!source || !source.basisObjectId)
+        source = null;
+
+      basis.data.resolveDataset(this, ??, source, source ? source.basisObjectId : null, this.sourceAdapter_);
+
       if (source instanceof AbstractDataset)
       {
         if (basis.array.add(this.sources, source))
@@ -372,6 +390,9 @@
     * @return {boolean} Returns true if source removed.
     */
     removeSource: function(source){
+      if (!source || !source.basisObjectId)
+        source = null;
+
       if (basis.array.remove(this.sources, source))
       {
         // remove event listeners from source

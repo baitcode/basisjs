@@ -2157,10 +2157,18 @@
     }
   };
 
-  function resolveDataset(context, fn, source, property){
-    var oldAdapter = context[property] || null;
+  function resolveDataset(context, fn, source, property, storage){
+    var oldAdapter = null;
     var newAdapter = null;
 
+    // fetch old adapter
+    if (!storage)
+      storage = context;
+
+    if (storage && property)
+      oldAdapter = storage[property] || null;
+
+    // resolve source to proper value
     if (typeof source == 'function')
       source = source.call(context, context);
 
@@ -2182,8 +2190,9 @@
     if (source instanceof AbstractDataset == false)
       source = null;
 
-    if (property && oldAdapter !== newAdapter)
+    if (oldAdapter !== newAdapter)
     {
+      // remove listener from old adapter if exists
       if (oldAdapter)
       {
         oldAdapter.source.removeHandler(oldAdapter.handler, oldAdapter);
@@ -2193,10 +2202,13 @@
           resolveDataset(oldAdapter, null, null, 'adapter_');
       }
 
+      // attach listener on new adapter if exists
       if (newAdapter)
         newAdapter.source.addHandler(newAdapter.handler, newAdapter);
 
-      context[property] = newAdapter;
+      // store new adapter if possible
+      if (storage && property)
+        storage[property] = newAdapter;
     }
 
     return source;
